@@ -9,7 +9,6 @@ namespace Scopely.Elasticsearch
     {
         static readonly Regex _awsRegionRegex = new Regex($@"\.(<region>[^\.]+)\.es\.amazonaws\.com$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         readonly string _url;
-        readonly string _awsRegion;
 
         public ElasticsearchUrl(string url)
         {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Scopely.Elasticsearch
 {
-    static class ElasticsearchSigner
+    public static class ElasticsearchSigner
     {
         static readonly Func<AWS4RequestSigner> _getSigner = Cache.Wrap(TimeSpan.FromMinutes(1), () =>
         {
