@@ -6,6 +6,11 @@
     <Company>Scopely</Company>
     <Authors>bcuff</Authors>
     <Copyright>2019</Copyright>
+    <PackageProjectUrl>https://github.com/scopely/elasticsearch-pipeline</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/scopely/elasticsearch-pipeline/blame/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/scopely/elasticsearch-pipeline</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>elasticsearch</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
