@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/scopely/elasticsearch-pipeline</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>elasticsearch</PackageTags>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <WarningsAsErrors />
   </PropertyGroup>
 
@@ -19,7 +19,7 @@
     <PackageReference Include="AWSSDK.Core" Version="3.3.31.11" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.9.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.1" />
   </ItemGroup>
 
 </Project>
