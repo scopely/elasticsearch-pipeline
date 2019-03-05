@@ -13,7 +13,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Scopely.Elasticsearch.Tests
 {
-    [TestFixture]
+    [TestFixture(1)]
+    [TestFixture(10 << 10)]
     public class ElasticsearchPipelineTests
     {
         public static BulkOperation[] _operations = new BulkOperation[]
@@ -36,16 +37,22 @@ namespace Scopely.Elasticsearch.Tests
 
         string _rawText;
         string[] _bulkLines;
+        ElasticsearchPipelineOptions _options;
+
+        public ElasticsearchPipelineTests(int targetBulkSizeInBytes)
+        {
+            _options = new ElasticsearchPipelineOptions
+            {
+                TargetBulkSizeInBytes = targetBulkSizeInBytes,
+            };
+        }
 
         [SetUp]
         public async Task SetUp()
         {
             var output = new MemoryStream();
             var target = new ActionBlock<byte[]>(m => output.Write(m, 0, m.Length));
-            var pipeline = new ElasticsearchPipeline(target, new ElasticsearchPipelineOptions
-            {
-                TargetBulkSizeInBytes = 10 << 10,
-            });
+            var pipeline = new ElasticsearchPipeline(target, _options);
             foreach (var op in _operations)
             {
                 await pipeline.SendAsync(op);

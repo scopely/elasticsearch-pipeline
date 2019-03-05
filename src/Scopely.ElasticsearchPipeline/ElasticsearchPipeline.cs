@@ -67,15 +67,18 @@ namespace Scopely.Elasticsearch
                 if (logger?.IsEnabled(LogLevel.Debug) ?? false) logger.LogDebug($"Signing {request.Method} {request.RequestUri} ...");
                 request = await ElasticsearchSigner.SignAsync(request);
                 if (logger?.IsEnabled(LogLevel.Debug) ?? false) logger.LogDebug($"Sending {request.Method} {request.RequestUri} ...");
-                var response = await client.SendAsync(request);
-                if (!response.IsSuccessStatusCode)
+                using (var response = await client.SendAsync(request))
                 {
-                    logger?.LogError(await response.GetDumpAsync());
-                    throw new Exception($"Got {response.StatusCode} response from {postUrl}.");
-                }
-                else
-                {
-                    logger?.LogInformation($"Wrote {body.Length:n0} bytes /_bulk API");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        logger?.LogError($"Got {response.StatusCode} from {postUrl}. Dumping response...");
+                        logger?.LogError(await response.GetDumpAsync());
+                        throw new Exception($"Got {response.StatusCode} response from {postUrl}.");
+                    }
+                    else
+                    {
+                        logger?.LogInformation($"Wrote {body.Length:n0} bytes /_bulk API");
+                    }
                 }
             });
             block.Completion.ContinueWith(t => client.Dispose());
