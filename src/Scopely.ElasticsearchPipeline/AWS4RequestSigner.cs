@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -73,6 +74,23 @@ namespace Scopely.Elasticsearch
             return hex.ToString();
         }
 
+        private static string GetPath(Uri uri)
+        {
+            var path = uri.AbsolutePath;
+            if (path.Length == 0) return "/";
+
+            IEnumerable<string> segments = path
+                .Split('/')
+                .Select(segment =>
+                {
+                    string escaped = WebUtility.UrlEncode(segment);
+                    escaped = escaped.Replace("*", "%2A");
+                    return escaped;
+                }
+                );
+            return string.Join("/", segments);
+        }
+
         public async Task<HttpRequestMessage> Sign(HttpRequestMessage request, string service, string region)
         {
             if (string.IsNullOrEmpty(service))
@@ -102,7 +120,9 @@ namespace Scopely.Elasticsearch
 
             var canonical_request = new StringBuilder();
             canonical_request.Append(request.Method + "\n");
-            canonical_request.Append(request.RequestUri.AbsolutePath + "\n");
+            var canonical_uri = GetPath(request.RequestUri);
+            canonical_request.Append(canonical_uri);
+            canonical_request.Append("\n");
 
             var canonicalQueryParams = GetCanonicalQueryParams(request);
 
@@ -134,7 +154,7 @@ namespace Scopely.Elasticsearch
             canonical_request.Append(payload_hash);
             
             var credential_scope = $"{datestamp}/{region}/{service}/aws4_request";
-                       
+
             var string_to_sign = $"{algorithm}\n{amzdate}\n{credential_scope}\n" + Hash(Encoding.UTF8.GetBytes(canonical_request.ToString()));
 
             var signing_key = GetSignatureKey(_secret_key, datestamp, region, service);
