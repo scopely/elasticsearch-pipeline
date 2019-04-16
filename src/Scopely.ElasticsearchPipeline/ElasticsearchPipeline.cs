@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -64,6 +65,7 @@ namespace Scopely.Elasticsearch
                 {
                     Content = new ByteArrayContent(body)
                 };
+                request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-ndjson");
                 if (logger?.IsEnabled(LogLevel.Debug) ?? false) logger.LogDebug($"Signing {request.Method} {request.RequestUri} ...");
                 request = await ElasticsearchSigner.SignAsync(request);
                 if (logger?.IsEnabled(LogLevel.Debug) ?? false) logger.LogDebug($"Sending {request.Method} {request.RequestUri} ...");
