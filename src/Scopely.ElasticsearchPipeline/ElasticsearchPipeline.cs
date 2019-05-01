@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Scopely.Elasticsearch
 {
@@ -77,10 +78,21 @@ namespace Scopely.Elasticsearch
                         logger?.LogError(await response.GetDumpAsync());
                         throw new Exception($"Got {response.StatusCode} response from {postUrl}.");
                     }
-                    else
+                    var mediaType = response.Content?.Headers.ContentType?.MediaType?.ToLowerInvariant();
+                    if (mediaType != "application/json")
                     {
-                        logger?.LogInformation($"Wrote {body.Length:n0} bytes /_bulk API");
+                        logger?.LogError($"Got {response.StatusCode} with Content-Type: {mediaType} from {postUrl}. Dumping response...");
+                        logger?.LogError(await response.GetDumpAsync());
+                        throw new Exception($"Got {response.StatusCode} but it wasn't JSON.");
                     }
+                    var responseBody = await response.Content.ReadAsStringAsync();
+                    var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>(responseBody);
+                    if (bulkResponse.Errors)
+                    {
+                        logger?.LogError($"Bulk response from {postUrl} had errors:\n" + responseBody);
+                        throw new Exception($"Bulk operation {postUrl} failed with errors.");
+                    }
+                    logger?.LogInformation($"Wrote {body.Length:n0} bytes /_bulk API");
                 }
             });
             block.Completion.ContinueWith(t => client.Dispose());
