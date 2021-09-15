@@ -8,11 +8,16 @@ namespace Scopely.Elasticsearch
 {
     public class BulkWriter
     {
-        readonly JsonSerializer _serializer = new JsonSerializer();
+        readonly JsonSerializer _serializer;
         readonly TextWriter _writer;
 
-        public BulkWriter(Stream stream)
+        public BulkWriter(Stream stream, bool omitTypeHeaders)
         {
+            _serializer = new JsonSerializer();
+            if (omitTypeHeaders)
+            {
+                _serializer.ContractResolver = NoTypeContractResolver.Instance;
+            }
             _writer = new StreamWriter(stream, new UTF8Encoding(false))
             {
                 NewLine = "\n",

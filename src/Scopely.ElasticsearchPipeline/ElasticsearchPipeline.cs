@@ -28,7 +28,7 @@ namespace Scopely.Elasticsearch
             ITargetBlock<byte[]> finalTarget,
             ElasticsearchPipelineOptions options)
         {
-            var target = CreateBulkRequestBodyBlock(options.TargetBulkSizeInBytes);
+            var target = CreateBulkRequestBodyBlock(options.TargetBulkSizeInBytes, options.OmitTypeHeaders);
             target.LinkTo(finalTarget, new DataflowLinkOptions { PropagateCompletion = true });
             _target = target;
             _completion = finalTarget.Completion;
@@ -99,11 +99,11 @@ namespace Scopely.Elasticsearch
             return block;
         }
 
-        private static IPropagatorBlock<BulkOperation, byte[]> CreateBulkRequestBodyBlock(int targetSizeInBytes)
+        private static IPropagatorBlock<BulkOperation, byte[]> CreateBulkRequestBodyBlock(int targetSizeInBytes, bool omitTypeHeaders)
         {
             var transformOpts = new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 1 };
             var stream = new MemoryStream();
-            var writer = new BulkWriter(stream);
+            var writer = new BulkWriter(stream, omitTypeHeaders);
             var source = new BufferBlock<byte[]>();
             var target = new ActionBlock<BulkOperation>(async op =>
             {
@@ -114,7 +114,7 @@ namespace Scopely.Elasticsearch
                     stream.Position = 0;
                     await source.SendAsync(stream.ToArray()).ConfigureAwait(false);
                     stream.SetLength(0);
-                    writer = new BulkWriter(stream);
+                    writer = new BulkWriter(stream, omitTypeHeaders);
                 }
             }, transformOpts);
             target.Completion.ContinueWith(async t =>

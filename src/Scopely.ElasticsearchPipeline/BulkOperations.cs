@@ -15,7 +15,7 @@ namespace Scopely.Elasticsearch
 
         public abstract void Write(BulkWriter writer);
 
-        protected class Header
+        protected internal class Header
         {
             public string _index;
             public string _type;

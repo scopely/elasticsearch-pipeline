@@ -13,8 +13,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Scopely.Elasticsearch.Tests
 {
-    [TestFixture(1)]
-    [TestFixture(10 << 10)]
+    [TestFixture(1, false)]
+    [TestFixture(10 << 10, false)]
+    [TestFixture(1, true)]
+    [TestFixture(10 << 10, true)]
     public class ElasticsearchPipelineTests
     {
         public static BulkOperation[] _operations = new BulkOperation[]
@@ -39,11 +41,12 @@ namespace Scopely.Elasticsearch.Tests
         string[] _bulkLines;
         ElasticsearchPipelineOptions _options;
 
-        public ElasticsearchPipelineTests(int targetBulkSizeInBytes)
+        public ElasticsearchPipelineTests(int targetBulkSizeInBytes, bool omitTypeHeaders)
         {
             _options = new ElasticsearchPipelineOptions
             {
                 TargetBulkSizeInBytes = targetBulkSizeInBytes,
+                OmitTypeHeaders = omitTypeHeaders,
             };
         }
 
@@ -90,8 +93,15 @@ namespace Scopely.Elasticsearch.Tests
             Assert.AreEqual("123", update["_id"].Value<string>());
             Assert.AreEqual(JTokenType.String, update["_index"].Type);
             Assert.AreEqual("test-index", update["_index"].Value<string>());
-            Assert.AreEqual(JTokenType.String, update["_type"].Type);
-            Assert.AreEqual("test-type", update["_type"].Value<string>());
+            if (_options.OmitTypeHeaders)
+            {
+                Assert.IsNull(update["_type"]);
+            }
+            else
+            {
+                Assert.AreEqual(JTokenType.String, update["_type"].Type);
+                Assert.AreEqual("test-type", update["_type"].Value<string>());
+            }
         }
 
         [Test]
@@ -116,8 +126,15 @@ namespace Scopely.Elasticsearch.Tests
             Assert.AreEqual("124", delete["_id"].Value<string>());
             Assert.AreEqual(JTokenType.String, delete["_index"].Type);
             Assert.AreEqual("test-index", delete["_index"].Value<string>());
-            Assert.AreEqual(JTokenType.String, delete["_type"].Type);
-            Assert.AreEqual("test-type", delete["_type"].Value<string>());
+            if (_options.OmitTypeHeaders)
+            {
+                Assert.IsNull(delete["_type"]);
+            }
+            else
+            {
+                Assert.AreEqual(JTokenType.String, delete["_type"].Type);
+                Assert.AreEqual("test-type", delete["_type"].Value<string>());
+            }
         }
 
         [Test]
