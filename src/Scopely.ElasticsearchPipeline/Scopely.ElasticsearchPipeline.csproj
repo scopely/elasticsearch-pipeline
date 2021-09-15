@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/scopely/elasticsearch-pipeline</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>elasticsearch</PackageTags>
-    <Version>1.0.6</Version>
+    <Version>1.1.0</Version>
     <WarningsAsErrors />
   </PropertyGroup>
 
