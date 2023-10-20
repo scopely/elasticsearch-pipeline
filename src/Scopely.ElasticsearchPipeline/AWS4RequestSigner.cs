@@ -16,10 +16,10 @@ namespace Scopely.Elasticsearch
     {
         private readonly string _access_key;
         private readonly string _secret_key;
-        private readonly string _token;
+        private readonly string? _token;
         private const string algorithm = "AWS4-HMAC-SHA256";
 
-        public AWS4RequestSigner(string accessKey, string secretKey, string token = null)
+        public AWS4RequestSigner(string accessKey, string secretKey, string? token = null)
         {
 
             if (string.IsNullOrEmpty(accessKey))
@@ -108,9 +108,11 @@ namespace Scopely.Elasticsearch
                 throw new ArgumentNullException(nameof(request));
             }
 
+            var uri = request.RequestUri ?? throw new ArgumentException("requst.RequestUri can't be null", nameof(request));
+
             if (request.Headers.Host == null)
             {
-                request.Headers.Host = request.RequestUri.Host;
+                request.Headers.Host = uri.Host;
             }
 
             var t = DateTimeOffset.UtcNow;
@@ -120,7 +122,7 @@ namespace Scopely.Elasticsearch
 
             var canonical_request = new StringBuilder();
             canonical_request.Append(request.Method + "\n");
-            var canonical_uri = GetPath(request.RequestUri);
+            var canonical_uri = GetPath(uri);
             canonical_request.Append(canonical_uri);
             canonical_request.Append("\n");
 
@@ -172,7 +174,8 @@ namespace Scopely.Elasticsearch
 
         private static string GetCanonicalQueryParams(HttpRequestMessage request)
         {
-            var querystring = HttpUtility.ParseQueryString(request.RequestUri.Query);
+            var uri = request.RequestUri ?? throw new ArgumentException(nameof(request));
+            var querystring = HttpUtility.ParseQueryString(uri.Query);
             var keys = querystring.AllKeys.OrderBy(a => a).ToArray();
             var queryParams = keys.Select(key => $"{key}={querystring[key]}");
             var canonicalQueryParams = string.Join("&", queryParams);

@@ -25,7 +25,8 @@ namespace Scopely.Elasticsearch
 
         public static Task<HttpRequestMessage> SignAsync(HttpRequestMessage request)
         {
-            var match = _hostRegex.Match(request.RequestUri.Host);
+            var uri = request.RequestUri ?? throw new ArgumentException("request.RequestUri null", nameof(request));
+            var match = _hostRegex.Match(uri.Host);
             if (!match.Success) return Task.FromResult(request);
             var region = match.Groups[1].Value;
             return Signer.Sign(request, "es", region);
