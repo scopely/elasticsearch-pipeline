@@ -3,15 +3,6 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>Scopely.Elasticsearch</RootNamespace>
-    <Company>Scopely</Company>
-    <Authors>bcuff</Authors>
-    <Copyright>2019</Copyright>
-    <PackageProjectUrl>https://github.com/scopely/elasticsearch-pipeline</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/scopely/elasticsearch-pipeline</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>elasticsearch</PackageTags>
-    <Version>1.2.0</Version>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
