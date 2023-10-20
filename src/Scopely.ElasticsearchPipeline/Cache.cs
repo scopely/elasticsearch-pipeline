@@ -9,6 +9,12 @@ namespace Scopely.Elasticsearch
     {
         private class CachedItem<T>
         {
+            public CachedItem(T value)
+            {
+                Value = value;
+                Watch = Stopwatch.StartNew();
+            }
+
             public Stopwatch Watch;
             public T Value;
         }
@@ -28,11 +34,7 @@ namespace Scopely.Elasticsearch
                     {
                         if (i == null || i.Watch.Elapsed > maxAge)
                         {
-                            i = item = new CachedItem<T>
-                            {
-                                Value = inner(),
-                                Watch = Stopwatch.StartNew(),
-                            };
+                            i = item = new CachedItem<T>(inner());
                         }
                     }
                 }

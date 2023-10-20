@@ -7,19 +7,22 @@ namespace Scopely.Elasticsearch
 {
     public abstract class BulkOperation
     {
-        public string Index { get; set; }
+        public string? Index { get; set; }
 
-        public string Type { get; set; }
+        public string? Type { get; set; }
 
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         public abstract void Write(BulkWriter writer);
 
         protected internal class Header
         {
-            public string _index;
-            public string _type;
-            public string _id;
+            [JsonProperty(nameof(_type), DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public string? _index;
+            [JsonProperty(nameof(_type), DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public string? _type;
+            [JsonProperty(nameof(_type), DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public string? _id;
 
             public Header(BulkOperation op)
             {
@@ -32,7 +35,8 @@ namespace Scopely.Elasticsearch
 
     public abstract class BulkDocumentOperation : BulkOperation
     {
-        public object Doc { get; set; }
+        private static readonly object _defaultDoc = new();
+        public object Doc { get; set; } = _defaultDoc;
     }
 
     public sealed class BulkUpdateOperation : BulkDocumentOperation

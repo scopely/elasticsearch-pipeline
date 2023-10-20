@@ -21,7 +21,7 @@ namespace Scopely.Elasticsearch
             }
         }
 
-        public string AwsRegion { get; private set; }
+        public string? AwsRegion { get; private set; }
 
         public override string ToString() => _url;
     }

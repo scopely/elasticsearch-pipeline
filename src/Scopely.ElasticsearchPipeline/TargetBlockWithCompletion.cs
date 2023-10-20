@@ -20,7 +20,7 @@ namespace Scopely.Elasticsearch
 
         public void Fault(Exception exception) => _target.Fault(exception);
 
-        public DataflowMessageStatus OfferMessage(DataflowMessageHeader messageHeader, T messageValue, ISourceBlock<T> source, bool consumeToAccept)
+        public DataflowMessageStatus OfferMessage(DataflowMessageHeader messageHeader, T messageValue, ISourceBlock<T>? source, bool consumeToAccept)
             => _target.OfferMessage(messageHeader, messageValue, source, consumeToAccept);
     }
 }

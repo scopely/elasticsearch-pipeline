@@ -85,8 +85,9 @@ namespace Scopely.Elasticsearch
                         logger?.LogError(await response.GetDumpAsync());
                         throw new Exception($"Got {response.StatusCode} but it wasn't JSON.");
                     }
-                    var responseBody = await response.Content.ReadAsStringAsync();
-                    var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>(responseBody);
+                    var responseBody = await (response.Content ?? throw new Exception($"Empty response from {postUrl}")).ReadAsStringAsync();
+                    var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>(responseBody)
+                        ?? throw new Exception($"Empty respnose from {postUrl}");
                     if (bulkResponse.Errors)
                     {
                         logger?.LogError($"Bulk response from {postUrl} had errors:\n" + responseBody);
