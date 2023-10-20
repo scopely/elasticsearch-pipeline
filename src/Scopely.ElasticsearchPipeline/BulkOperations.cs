@@ -17,8 +17,11 @@ namespace Scopely.Elasticsearch
 
         protected internal class Header
         {
+            [JsonProperty(nameof(_type), DefaultValueHandling = DefaultValueHandling.Ignore)]
             public string? _index;
+            [JsonProperty(nameof(_type), DefaultValueHandling = DefaultValueHandling.Ignore)]
             public string? _type;
+            [JsonProperty(nameof(_type), DefaultValueHandling = DefaultValueHandling.Ignore)]
             public string? _id;
 
             public Header(BulkOperation op)
